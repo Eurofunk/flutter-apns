@@ -25,6 +25,7 @@ dependencies:
     git:
       url: https://github.com/Eurofunk/flutter-apns
       path: flutter_apns_only/
+      ref: v1.0.0
 
 dev_dependencies:
   flutter_test:
