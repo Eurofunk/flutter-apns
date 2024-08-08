@@ -126,6 +126,10 @@ func getFlutterError(_ error: Error) -> FlutterError {
         if readBool("alert") {
             options.append(.alert)
         }
+
+        if readBool("carPlay") {
+           options.append(.carPlay)
+        }
         
         var provisionalRequested = false
         if #available(iOS 12.0, *) {
@@ -149,6 +153,7 @@ func getFlutterError(_ error: Error) -> FlutterError {
                     "sound": settings.soundSetting == .enabled,
                     "badge": settings.badgeSetting == .enabled,
                     "alert": settings.alertSetting == .enabled,
+                    "carPlay": settings.carPlaySetting == .enabled,
                     "provisional": granted && provisionalRequested
                 ]
                 
