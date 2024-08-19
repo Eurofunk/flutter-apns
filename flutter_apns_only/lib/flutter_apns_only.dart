@@ -113,7 +113,6 @@ class ApnsPushConnectorOnly {
   }
 
   /// Handler that returns true/false to decide if push alert should be displayed when in foreground.
-  /// Returning true will delay onMessage callback until user actually clicks on it
   WillPresentHandler? shouldPresent;
 
   final isDisabledByUser = ValueNotifier<bool?>(null);
