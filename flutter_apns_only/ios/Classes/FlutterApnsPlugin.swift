@@ -217,9 +217,9 @@ func getFlutterError(_ error: Error) -> FlutterError {
                 completionHandler([.alert, .sound])
             } else {
                 completionHandler([])
-                let userInfo = FlutterApnsSerialization.remoteMessageUserInfo(toDict: userInfo)
-                self.channel.invokeMethod("onMessage", arguments: userInfo)
             }
+            let userInfo = FlutterApnsSerialization.remoteMessageUserInfo(toDict: userInfo)
+            self.channel.invokeMethod("onMessage", arguments: userInfo)
         }
     }
     
