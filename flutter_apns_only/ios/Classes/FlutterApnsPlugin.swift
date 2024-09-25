@@ -204,12 +204,15 @@ func getFlutterError(_ error: Error) -> FlutterError {
     
     public func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         let userInfo = notification.request.content.userInfo
+        let identifier = notification.request.identifier
         
         guard userInfo["aps"] != nil else {
             return
         }
         
-        let dict = FlutterApnsSerialization.remoteMessageUserInfo(toDict: userInfo)
+        var dict = FlutterApnsSerialization.remoteMessageUserInfo(toDict: userInfo)
+        dict["identifier"] = identifier as NSString
+        channel.invokeMethod("onMessage", arguments: dict)
         
         channel.invokeMethod("willPresent", arguments: dict) { (result) in
             let shouldShow = (result as? Bool) ?? false
@@ -218,8 +221,6 @@ func getFlutterError(_ error: Error) -> FlutterError {
             } else {
                 completionHandler([])
             }
-            let userInfo = FlutterApnsSerialization.remoteMessageUserInfo(toDict: userInfo)
-            self.channel.invokeMethod("onMessage", arguments: userInfo)
         }
     }
     
