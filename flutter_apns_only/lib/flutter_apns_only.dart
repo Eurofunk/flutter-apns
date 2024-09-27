@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' hide MessageHandler;
@@ -24,8 +23,7 @@ enum ApnsAuthorizationStatus {
 
 class ApnsPushConnectorOnly {
   final MethodChannel _channel = () {
-    assert(Platform.isIOS,
-        'ApnsPushConnectorOnly can only be created on iOS platform!');
+    assert(defaultTargetPlatform == TargetPlatform.iOS, 'ApnsPushConnectorOnly can only be created on iOS platform!');
     return const MethodChannel('flutter_apns');
   }();
   ApnsMessageHandler? _onMessage;
@@ -34,8 +32,7 @@ class ApnsPushConnectorOnly {
 
   Future<bool> requestNotificationPermissions(
       [IosNotificationSettings iosSettings = const IosNotificationSettings()]) async {
-    final bool? result = await _channel.invokeMethod<bool>(
-        'requestNotificationPermissions', iosSettings.toMap());
+    final bool? result = await _channel.invokeMethod<bool>('requestNotificationPermissions', iosSettings.toMap());
     return result ?? false;
   }
 
@@ -70,8 +67,7 @@ class ApnsPushConnectorOnly {
         token.value = call.arguments;
         return null;
       case 'onIosSettingsRegistered':
-        final obj = IosNotificationSettings._fromMap(
-            call.arguments.cast<String, bool>());
+        final obj = IosNotificationSettings._fromMap(call.arguments.cast<String, bool>());
 
         isDisabledByUser.value = obj.alert == false;
         return null;
@@ -82,8 +78,7 @@ class ApnsPushConnectorOnly {
       case 'onResume':
         return _onResume?.call(_extractMessage(call));
       case 'willPresent':
-        return shouldPresent?.call(_extractMessage(call)) ??
-            Future.value(false);
+        return shouldPresent?.call(_extractMessage(call)) ?? Future.value(false);
 
       default:
         throw UnsupportedError('Unrecognized JSON message');
@@ -126,8 +121,7 @@ class ApnsPushConnectorOnly {
   }
 
   /// https://developer.apple.com/documentation/usernotifications/declaring_your_actionable_notification_types
-  Future<void> setNotificationCategories(
-      List<UNNotificationCategory> categories) {
+  Future<void> setNotificationCategories(List<UNNotificationCategory> categories) {
     return _channel.invokeMethod(
       'setNotificationCategories',
       categories.map((e) => e.toJson()).toList(),
@@ -157,6 +151,7 @@ class IosNotificationSettings {
   final bool? sound;
   final bool? alert;
   final bool? badge;
+
   /// Whether to show notifications on CarPlay
   final bool? carPlay;
 
@@ -198,8 +193,7 @@ class UNNotificationAction {
   final String title;
   final List<UNNotificationActionOptions> options;
 
-  static const defaultIdentifier =
-      'com.apple.UNNotificationDefaultActionIdentifier';
+  static const defaultIdentifier = 'com.apple.UNNotificationDefaultActionIdentifier';
 
   /// Returns action identifier associated with this push.
   /// May be null, UNNotificationAction.defaultIdentifier, or value declared in setNotificationCategories
