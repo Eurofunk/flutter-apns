@@ -48,6 +48,10 @@ func getFlutterError(_ error: Error) -> FlutterError {
         case "setNotificationCategories":
             setNotificationCategories(arguments: call.arguments!)
             result(nil)
+        case "getNotificationSettings":
+            getNotificationSettings(){(value) in
+                result(value)
+            }
         default:
             assertionFailure(call.method)
             result(FlutterMethodNotImplemented)
@@ -105,6 +109,23 @@ func getFlutterError(_ error: Error) -> FlutterError {
         }
     }
     
+    func getNotificationSettings(completion: @escaping (([String: Bool]) -> Void)){
+        let center = UNUserNotificationCenter.current()
+        let application = UIApplication.shared
+
+        assert(center.delegate != nil)
+
+        center.getNotificationSettings { (settings) in
+            let map = [
+                "sound": settings.soundSetting == .enabled,
+                "badge": settings.badgeSetting == .enabled,
+                "alert": settings.alertSetting == .enabled,
+                "carPlay": settings.carPlaySetting == .enabled,
+            ]
+            completion(map)
+        }
+    }
+    
     func requestNotificationPermissions(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         let center = UNUserNotificationCenter.current()
         let application = UIApplication.shared
@@ -130,14 +151,6 @@ func getFlutterError(_ error: Error) -> FlutterError {
         if readBool("carPlay") {
            options.append(.carPlay)
         }
-        
-        var provisionalRequested = false
-        if #available(iOS 12.0, *) {
-            if readBool("provisional") {
-                options.append(.provisional)
-                provisionalRequested = true
-            }
-        }
 
         
         let optionsUnion = UNAuthorizationOptions(options)
@@ -148,16 +161,9 @@ func getFlutterError(_ error: Error) -> FlutterError {
                 return
             }
             
-            center.getNotificationSettings { (settings) in
-                let map = [
-                    "sound": settings.soundSetting == .enabled,
-                    "badge": settings.badgeSetting == .enabled,
-                    "alert": settings.alertSetting == .enabled,
-                    "carPlay": settings.carPlaySetting == .enabled,
-                    "provisional": granted && provisionalRequested
-                ]
-                
-                self.channel.invokeMethod("onIosSettingsRegistered", arguments: map)
+            self.getNotificationSettings(){(value) in
+                self.channel.invokeMethod("onIosSettingsRegistered", arguments: value)
+            
             }
             
             result(granted)
