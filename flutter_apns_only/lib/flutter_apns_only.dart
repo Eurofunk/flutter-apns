@@ -68,9 +68,9 @@ class ApnsPushConnectorOnly {
         return null;
       case 'onIosSettingsRegistered':
         final obj = IosNotificationSettings._fromMap(call.arguments.cast<String, bool>());
-
+        _iosSettingsStreamController.add(obj);
         isDisabledByUser.value = obj.alert == false;
-        return null;
+        return;
       case 'onMessage':
         return _onMessage?.call(_extractMessage(call));
       case 'onLaunch':
@@ -126,6 +126,12 @@ class ApnsPushConnectorOnly {
       'setNotificationCategories',
       categories.map((e) => e.toJson()).toList(),
     );
+  }
+
+  /// https://developer.apple.com/documentation/usernotifications/unnotificationsettings/
+  Future<IosNotificationSettings> getNotificationSettings() async {
+    final result = await _channel.invokeMethod<Map<String, dynamic>>('getNotificationSettings');
+    return IosNotificationSettings._fromMap(result as Map<String, bool>);
   }
 
   Future<void> unregister() async {
