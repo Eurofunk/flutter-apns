@@ -156,14 +156,14 @@ packages:
       path: "../flutter_apns"
       relative: true
     source: path
-    version: "1.7.5"
+    version: "1.7.6"
   flutter_apns_only:
     dependency: transitive
     description:
       path: "../flutter_apns_only"
       relative: true
     source: path
-    version: "1.7.5"
+    version: "1.7.6"
   flutter_local_notifications:
     dependency: "direct main"
     description:

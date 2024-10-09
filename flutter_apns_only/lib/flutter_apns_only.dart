@@ -130,8 +130,9 @@ class ApnsPushConnectorOnly {
 
   /// https://developer.apple.com/documentation/usernotifications/unnotificationsettings/
   Future<IosNotificationSettings> getNotificationSettings() async {
-    final result = await _channel.invokeMethod<Map<String, dynamic>>('getNotificationSettings');
-    return IosNotificationSettings._fromMap(result as Map<String, bool>);
+    final result = await _channel.invokeMethod('getNotificationSettings');
+    final Map<String, dynamic> notificationSettings = result.cast<String, bool>();
+    return IosNotificationSettings._fromMap(notificationSettings as Map<String, bool>);
   }
 
   Future<void> unregister() async {
