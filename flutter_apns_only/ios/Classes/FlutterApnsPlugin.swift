@@ -49,9 +49,7 @@ func getFlutterError(_ error: Error) -> FlutterError {
             setNotificationCategories(arguments: call.arguments!)
             result(nil)
         case "getNotificationSettings":
-            getNotificationSettings(){(value) in
-                result(value)
-            }
+            getNotificationSettings(completion: { settings in result(settings)})
         default:
             assertionFailure(call.method)
             result(FlutterMethodNotImplemented)
